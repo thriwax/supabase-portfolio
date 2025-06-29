@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
     if (!article) return {}
 
-    const image = article.image_url || 'https://zkfyodmlqstgnqvkemxo.supabase.co/storage/v1/object/public/project-images/fedor-tatarintsev-thriwax-main-image.jpg' // подставь свою дефолтную
+    const image = article.image_url || 'https://placehold.co/600x400' // подставь свою дефолтную
 
     return {
         title: `${article.title} – Fedor Tatarintsev`,
