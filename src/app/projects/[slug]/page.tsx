@@ -2,11 +2,17 @@ import { supabase } from '../../../../lib/supabaseClient'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+export async function generateMetadata({
+    params,
+}: {
+    params: Promise<{ slug: string }>
+}): Promise<Metadata> {
+    const { slug } = await params
+
     const { data: project } = await supabase
         .from('projects')
         .select('title, description, image_url')
-        .eq('slug', params.slug)
+        .eq('slug', slug)
         .single()
 
     if (!project) return {}
@@ -20,6 +26,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
             title: project.title,
             description: project.description,
             images: [{ url: image }],
+            type: 'website',
         },
         twitter: {
             card: 'summary_large_image',
@@ -30,8 +37,12 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     }
 }
 
-export default async function ProjectPage({ params }: { params: { slug: string } }) {
-    const { slug } = params
+export default async function ProjectPage({
+    params,
+}: {
+    params: Promise<{ slug: string }>
+}) {
+    const { slug } = await params
 
     const { data: project, error } = await supabase
         .from('projects')
@@ -48,9 +59,15 @@ export default async function ProjectPage({ params }: { params: { slug: string }
         <main className="max-w-3xl mx-auto px-6 md:px-0 py-[150px] space-y-6">
             <h1 className="text-3xl font-bold">{project.title}</h1>
             <p className="text-gray-600">{project.description}</p>
+
             {project.image_url && (
-                <img src={project.image_url} alt={project.title} className="w-full rounded" />
+                <img
+                    src={project.image_url}
+                    alt={project.title}
+                    className="w-full rounded"
+                />
             )}
+
             {project.url && (
                 <a
                     href={project.url}
