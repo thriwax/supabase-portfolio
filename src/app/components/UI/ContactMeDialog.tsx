@@ -11,7 +11,7 @@ export default function ContactMeModal() {
     return (
         <section className="py-24 text-center bg-[#ff9ee0] mt-[100px]">
             <h2 className="text-7xl font-bold text-black mb-4">Contact Me</h2>
-            <p className="text-xl text-white font-bold mb-8">Let’s work together. Get in touch!</p>
+            <p className="text-xl text-white font-bold mb-8">Let&apos;s work together. Get in touch!</p>
 
             <button
                 onClick={() => setIsOpen(true)}
@@ -39,7 +39,7 @@ export default function ContactMeModal() {
                         </button>
 
                         <h3 className="text-left text-3xl font-bold text-black mb-2">Send me a message</h3>
-                        <p className="text-left text-lg text-gray-600 mb-6">I'll get back to you soon.</p>
+                        <p className="text-left text-lg text-gray-600 mb-6">I&apos;ll get back to you soon.</p>
 
                         {state.succeeded ? (
                             <div className="text-center py-10">

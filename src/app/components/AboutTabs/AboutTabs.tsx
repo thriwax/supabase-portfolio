@@ -1,13 +1,11 @@
 'use client'
 
-import { useRef, useState, Suspense, useEffect } from 'react'
+import { useRef, Suspense, useEffect } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'
-import TechStack from '../UI/TechStack'
 import Tabs from '../UI/Tabs'
-import Card from '../UI/Card'
 
 function LogoModel() {
     const { scene } = useGLTF('https://zkfyodmlqstgnqvkemxo.supabase.co/storage/v1/object/public/project-images//f-model.glb')
@@ -75,8 +73,8 @@ export default function AboutTabs() {
             </div>
             <div className='w-full md:w-1/2'>
                 <p className='text-white text-2xl py-6 max-sm:text-xl'>
-                    My name is Fedor. I'm a full stack web developer with a passion for creating interactive and responsive web applications.
-                    I have experience working with modern web technologies and frameworks. I'm a fast learner and a collaborative team player.
+                    My name is Fedor. I&apos;m a full stack web developer with a passion for creating interactive and responsive web applications.
+                    I have experience working with modern web technologies and frameworks. I&apos;m a fast learner and a collaborative team player.
                 </p>
                 <Tabs />
             </div>
