@@ -3,7 +3,8 @@ import "./globals.css";
 import Header from "./components/Header/Header";
 import Footer from "./components/Footer/Footer";
 import katana from "./fonts/katana";
-import { AudioPlayerProvider, FloatingAudioPlayer } from "./components/AudioPlayerContext/AudioPlayerContext";
+import { AudioPlayerProvider } from "./components/AudioPlayerContext/AudioPlayerContext";
+import { FloatingAudioPlayer } from "./components/FloatingAudioPlayer/FloatingAudioPlayer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
