@@ -1,5 +1,3 @@
-// 3. АДМИН-ФОРМА ЗАГРУЗКИ ТРЕКОВ
-// Можно использовать в /admin/audio или добавить в существующий AdminPage
 'use client'
 
 import { useState } from 'react'
@@ -7,7 +5,7 @@ import { supabase } from '../../../../lib/supabaseClient'
 import { uploadImage } from '../../../../lib/uploadImage'
 import TrackList from '@/app/components/TrackList/TrackList'
 
-export const AudioUploader = () => {
+export default function AudioUploader() {
     const [title, setTitle] = useState('')
     const [audioFile, setAudioFile] = useState<File | null>(null)
     const [coverFile, setCoverFile] = useState<File | null>(null)
@@ -57,11 +55,10 @@ export const AudioUploader = () => {
             />
             <input type="file" accept="audio/*" onChange={(e) => setAudioFile(e.target.files?.[0] || null)} />
             <input type="file" accept="image/*" onChange={(e) => setCoverFile(e.target.files?.[0] || null)} />
+            {/* biome-ignore lint/a11y/useButtonType: <explanation> */}
             <button onClick={handleUpload} className="bg-black text-white px-4 py-2 rounded">Загрузить</button>
             <p className="text-sm text-gray-600">{message}</p>
             <TrackList />
         </div>
     )
 }
-
-export default AudioUploader
