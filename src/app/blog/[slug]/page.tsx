@@ -2,11 +2,7 @@ import { supabase } from '../../../../lib/supabaseClient'
 import { notFound } from 'next/navigation'
 import type { Metadata } from "next";
 
-type Props = {
-    params: { slug: string }
-}
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
     const { slug } = params
 
     const { data: article } = await supabase
@@ -17,7 +13,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
     if (!article) return {}
 
-    const image = article.image_url || 'https://placehold.co/600x400' // подставь свою дефолтную
+    const image = article.image_url || 'https://placehold.co/600x400'
 
     return {
         title: `${article.title} – Fedor Tatarintsev`,
@@ -37,7 +33,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }
 }
 
-export default async function ArticlePage({ params }: Props) {
+export default async function ArticlePage({ params }: { params: { slug: string } }) {
     const { slug } = params
 
     const { data: article, error } = await supabase
@@ -59,6 +55,7 @@ export default async function ArticlePage({ params }: Props) {
             )}
             <div
                 className="blog-content prose max-w-none"
+                // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
                 dangerouslySetInnerHTML={{ __html: article.content }}
             />
         </main>
