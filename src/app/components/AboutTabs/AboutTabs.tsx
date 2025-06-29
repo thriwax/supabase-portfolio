@@ -8,21 +8,24 @@ import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'
 import Tabs from '../UI/Tabs'
 
 function LogoModel() {
-    const { scene } = useGLTF('https://zkfyodmlqstgnqvkemxo.supabase.co/storage/v1/object/public/project-images//f-model.glb')
-    const ref = useRef()
+    const { scene } = useGLTF(
+        'https://zkfyodmlqstgnqvkemxo.supabase.co/storage/v1/object/public/project-images//f-model.glb'
+    )
+    const ref = useRef<THREE.Group>(null)
 
     useEffect(() => {
         scene.traverse((child) => {
-            if (child.isMesh) {
-                child.material = new THREE.MeshPhysicalMaterial({
+            if ((child as THREE.Mesh).isMesh) {
+                const mesh = child as THREE.Mesh
+                mesh.material = new THREE.MeshPhysicalMaterial({
                     color: new THREE.Color('#7D7D7D'),
                     metalness: 1,
                     roughness: 0.15,
                     clearcoat: 1,
                     clearcoatRoughness: 0.05,
                 })
-                child.castShadow = true
-                child.receiveShadow = true
+                mesh.castShadow = true
+                mesh.receiveShadow = true
             }
         })
     }, [scene])
@@ -60,19 +63,19 @@ function SetupEnvironment({ hdrUrl }: { hdrUrl: string }) {
 
 export default function AboutTabs() {
     return (
-        <section className='flex gap-10 max-sm:gap-3 py-10 items-center justify-center flex-col sm:flex-row'>
-            <div className='w-full md:w-1/2 h-[300px] md:h-[400px]'>
+        <section className="flex gap-10 max-sm:gap-3 py-10 items-center justify-center flex-col sm:flex-row">
+            <div className="w-full md:w-1/2 h-[300px] md:h-[400px]">
                 <Canvas camera={{ position: [0, 0, 5] }} gl={{ antialias: true }} shadows>
                     <Suspense fallback={null}>
-                        <SetupEnvironment hdrUrl='https://zkfyodmlqstgnqvkemxo.supabase.co/storage/v1/object/public/project-images//%20SkiesLL_6.hdr' />
+                        <SetupEnvironment hdrUrl="https://zkfyodmlqstgnqvkemxo.supabase.co/storage/v1/object/public/project-images//%20SkiesLL_6.hdr" />
                         <ambientLight intensity={0.4} />
                         <directionalLight position={[2, 2, 2]} intensity={1} castShadow />
                         <LogoModel />
                     </Suspense>
                 </Canvas>
             </div>
-            <div className='w-full md:w-1/2'>
-                <p className='text-white text-2xl py-6 max-sm:text-xl'>
+            <div className="w-full md:w-1/2">
+                <p className="text-white text-2xl py-6 max-sm:text-xl">
                     My name is Fedor. I&apos;m a full stack web developer with a passion for creating interactive and responsive web applications.
                     I have experience working with modern web technologies and frameworks. I&apos;m a fast learner and a collaborative team player.
                 </p>
@@ -82,4 +85,6 @@ export default function AboutTabs() {
     )
 }
 
-useGLTF.preload('https://zkfyodmlqstgnqvkemxo.supabase.co/storage/v1/object/public/project-images//f-model.glb')
+useGLTF.preload(
+    'https://zkfyodmlqstgnqvkemxo.supabase.co/storage/v1/object/public/project-images//f-model.glb'
+)
