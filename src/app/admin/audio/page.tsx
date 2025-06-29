@@ -3,7 +3,10 @@
 import { useState } from 'react'
 import { supabase } from '../../../../lib/supabaseClient'
 import { uploadImage } from '../../../../lib/uploadImage'
-import TrackList from '@/app/components/TrackList/TrackList'
+
+// Если TrackList — клиентский, импорт можно оставить. Иначе: динамический импорт
+import dynamic from 'next/dynamic'
+const TrackList = dynamic(() => import('@/app/components/TrackList/TrackList'), { ssr: false })
 
 export default function Page() {
     const [title, setTitle] = useState('')
@@ -18,28 +21,34 @@ export default function Page() {
         }
 
         setMessage('Загрузка...')
-        const audioUrl = await uploadImage(audioFile)
-        const coverUrl = await uploadImage(coverFile)
 
-        if (!audioUrl || !coverUrl) {
-            setMessage('Ошибка загрузки файлов')
-            return
-        }
+        try {
+            const audioUrl = await uploadImage(audioFile)
+            const coverUrl = await uploadImage(coverFile)
 
-        const { error } = await supabase.from('audio_tracks').insert({
-            title,
-            audio_url: audioUrl,
-            cover_url: coverUrl,
-        })
+            if (!audioUrl || !coverUrl) {
+                setMessage('Ошибка загрузки файлов')
+                return
+            }
 
-        if (error) {
-            console.error(error)
-            setMessage('Ошибка при сохранении')
-        } else {
-            setMessage('✅ Трек загружен!')
-            setTitle('')
-            setAudioFile(null)
-            setCoverFile(null)
+            const { error } = await supabase.from('audio_tracks').insert({
+                title,
+                audio_url: audioUrl,
+                cover_url: coverUrl,
+            })
+
+            if (error) {
+                console.error(error)
+                setMessage('Ошибка при сохранении')
+            } else {
+                setMessage('✅ Трек загружен!')
+                setTitle('')
+                setAudioFile(null)
+                setCoverFile(null)
+            }
+        } catch (err) {
+            console.error(err)
+            setMessage('Произошла ошибка во время загрузки')
         }
     }
 
@@ -53,9 +62,19 @@ export default function Page() {
                 placeholder="Название трека"
                 className="w-full p-2 border rounded"
             />
-            <input type="file" accept="audio/*" onChange={(e) => setAudioFile(e.target.files?.[0] || null)} />
-            <input type="file" accept="image/*" onChange={(e) => setCoverFile(e.target.files?.[0] || null)} />
-            <button onClick={handleUpload} className="bg-black text-white px-4 py-2 rounded">Загрузить</button>
+            <input
+                type="file"
+                accept="audio/*"
+                onChange={(e) => setAudioFile(e.target.files?.[0] || null)}
+            />
+            <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setCoverFile(e.target.files?.[0] || null)}
+            />
+            <button onClick={handleUpload} className="bg-black text-white px-4 py-2 rounded">
+                Загрузить
+            </button>
             <p className="text-sm text-gray-600">{message}</p>
             <TrackList />
         </div>

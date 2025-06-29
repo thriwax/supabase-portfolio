@@ -12,7 +12,7 @@ interface Track {
     cover_url: string
 }
 
-export const TrackList = () => {
+export default function TrackList() {
     const [tracks, setTracks] = useState<Track[]>([])
     const { setTrack } = useAudioPlayer()
 
@@ -43,7 +43,7 @@ export const TrackList = () => {
                 <p className="text-sm text-gray-500">Треки отсутствуют</p>
             ) : (
                 <ul className="space-y-2">
-                    {tracks.map((track) => (
+                    {tracks.map(track => (
                         <li
                             key={track.id}
                             className="flex items-center justify-between bg-gray-800 text-white p-3 rounded group"
@@ -72,5 +72,3 @@ export const TrackList = () => {
         </div>
     )
 }
-
-export default TrackList
