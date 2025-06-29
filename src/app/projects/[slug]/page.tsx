@@ -1,24 +1,12 @@
-import type { Metadata, ResolvingMetadata } from 'next'
 import { supabase } from '../../../../lib/supabaseClient'
 import { notFound } from 'next/navigation'
+import type { Metadata } from 'next'
 
-// тип для контекста страницы
-type PageProps = {
-    params: {
-        slug: string
-    }
-}
-
-export async function generateMetadata(
-    { params }: PageProps,
-    _parent: ResolvingMetadata
-): Promise<Metadata> {
-    const { slug } = params
-
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
     const { data: project } = await supabase
         .from('projects')
         .select('title, description, image_url')
-        .eq('slug', slug)
+        .eq('slug', params.slug)
         .single()
 
     if (!project) return {}
@@ -42,7 +30,7 @@ export async function generateMetadata(
     }
 }
 
-export default async function ProjectPage({ params }: PageProps) {
+export default async function ProjectPage({ params }: { params: { slug: string } }) {
     const { slug } = params
 
     const { data: project, error } = await supabase
@@ -61,11 +49,7 @@ export default async function ProjectPage({ params }: PageProps) {
             <h1 className="text-3xl font-bold">{project.title}</h1>
             <p className="text-gray-600">{project.description}</p>
             {project.image_url && (
-                <img
-                    src={project.image_url}
-                    alt={project.title}
-                    className="w-full rounded"
-                />
+                <img src={project.image_url} alt={project.title} className="w-full rounded" />
             )}
             {project.url && (
                 <a
