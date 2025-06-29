@@ -2,16 +2,17 @@ import { supabase } from '../../../../lib/supabaseClient'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 
-// ✅ Убираем отдельный тип Props
-export async function generateMetadata({
-    params,
-}: {
-    params: { slug: string }
-}): Promise<Metadata> {
+// ✅ УБИРАЕМ отдельный type Props
+
+export async function generateMetadata(
+    context: { params: { slug: string } }
+): Promise<Metadata> {
+    const { slug } = context.params
+
     const { data: project } = await supabase
         .from('projects')
         .select('title, description, image_url')
-        .eq('slug', params.slug)
+        .eq('slug', slug)
         .single()
 
     if (!project) return {}
@@ -25,7 +26,6 @@ export async function generateMetadata({
             title: project.title,
             description: project.description,
             images: [{ url: image }],
-            type: 'website',
         },
         twitter: {
             card: 'summary_large_image',
