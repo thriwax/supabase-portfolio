@@ -2,11 +2,12 @@ import { supabase } from '../../../../lib/supabaseClient'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 
-type Props = {
+// ✅ Убираем отдельный тип Props
+export async function generateMetadata({
+    params,
+}: {
     params: { slug: string }
-}
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+}): Promise<Metadata> {
     const { data: project } = await supabase
         .from('projects')
         .select('title, description, image_url')
@@ -15,10 +16,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
     if (!project) return {}
 
-    const image = project.image_url || 'https://placehold.co/600x400' // подставь свою дефолтную
+    const image = project.image_url || 'https://placehold.co/600x400'
 
     return {
-        title: project.title,
+        title: `${project.title} – Fedor Tatarintsev`,
         description: project.description,
         openGraph: {
             title: project.title,
@@ -35,7 +36,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }
 }
 
-export default async function ProjectPage({ params }: Props) {
+export default async function ProjectPage({
+    params,
+}: {
+    params: { slug: string }
+}) {
     const { slug } = params
 
     const { data: project, error } = await supabase
@@ -54,7 +59,11 @@ export default async function ProjectPage({ params }: Props) {
             <h1 className="text-3xl font-bold">{project.title}</h1>
             <p className="text-gray-600">{project.description}</p>
             {project.image_url && (
-                <img src={project.image_url} alt={project.title} className="w-full rounded" />
+                <img
+                    src={project.image_url}
+                    alt={project.title}
+                    className="w-full rounded"
+                />
             )}
             {project.url && (
                 <a
