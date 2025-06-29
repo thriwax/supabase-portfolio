@@ -1,13 +1,19 @@
+import type { Metadata, ResolvingMetadata } from 'next'
 import { supabase } from '../../../../lib/supabaseClient'
 import { notFound } from 'next/navigation'
-import type { Metadata } from 'next'
 
-// ✅ УБИРАЕМ отдельный type Props
+// тип для контекста страницы
+type PageProps = {
+    params: {
+        slug: string
+    }
+}
 
 export async function generateMetadata(
-    context: { params: { slug: string } }
+    { params }: PageProps,
+    _parent: ResolvingMetadata
 ): Promise<Metadata> {
-    const { slug } = context.params
+    const { slug } = params
 
     const { data: project } = await supabase
         .from('projects')
@@ -36,11 +42,7 @@ export async function generateMetadata(
     }
 }
 
-export default async function ProjectPage({
-    params,
-}: {
-    params: { slug: string }
-}) {
+export default async function ProjectPage({ params }: PageProps) {
     const { slug } = params
 
     const { data: project, error } = await supabase
