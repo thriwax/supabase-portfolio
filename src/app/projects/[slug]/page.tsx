@@ -2,16 +2,11 @@ import { supabase } from '../../../../lib/supabaseClient'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 
-type Params = {
-    slug: string
-}
-
-// Мета-данные для SEO и соцсетей
-export async function generateMetadata({
-    params,
-}: {
-    params: Params
-}): Promise<Metadata> {
+// ---------- generateMetadata ----------
+export async function generateMetadata(
+    props: Promise<{ params: { slug: string } }>
+): Promise<Metadata> {
+    const { params } = await props
     const { slug } = params
 
     const { data: project, error } = await supabase
@@ -45,12 +40,11 @@ export async function generateMetadata({
     }
 }
 
-// Основная страница проекта
-export default async function ProjectPage({
-    params,
-}: {
-    params: Params
-}) {
+// ---------- Основная страница проекта ----------
+export default async function ProjectPage(
+    props: Promise<{ params: { slug: string } }>
+) {
+    const { params } = await props
     const { slug } = params
     console.log('[Server] slug:', slug)
 
@@ -79,7 +73,6 @@ export default async function ProjectPage({
 
             <p className="text-gray-600">{project.description}</p>
 
-            {/* 🔽 Теги проекта */}
             {Array.isArray(project.tags) && project.tags.length > 0 && (
                 <div className="flex flex-wrap gap-2">
                     {project.tags.map((tag: string) => (
