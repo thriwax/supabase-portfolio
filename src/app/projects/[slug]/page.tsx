@@ -2,6 +2,7 @@ import { supabase } from '../../../../lib/supabaseClient'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 
+// ✅ 1. generateMetadata — здесь params МОЖНО await
 export async function generateMetadata(
     props: Promise<{ params: { slug: string } }>
 ): Promise<Metadata> {
@@ -18,28 +19,31 @@ export async function generateMetadata(
         return {}
     }
 
+    const image = project.image_url || 'https://placehold.co/600x400'
+
     return {
         title: `${project.title} – Fedor Tatarintsev`,
         description: project.description,
         openGraph: {
             title: project.title,
             description: project.description,
-            images: [{ url: project.image_url || 'https://placehold.co/600x400' }],
+            images: [{ url: image }],
         },
         twitter: {
             card: 'summary_large_image',
             title: project.title,
             description: project.description,
-            images: [project.image_url || 'https://placehold.co/600x400'],
+            images: [image],
         },
     }
 }
 
-// ✅ params теперь — Promise, нужно await
-export default async function ProjectPage(
-    props: Promise<{ params: { slug: string } }>
-) {
-    const { params } = await props
+// ✅ 2. default export страницы — БЕЗ await, обычный объект
+export default async function ProjectPage({
+    params,
+}: {
+    params: { slug: string }
+}) {
     const { slug } = params
 
     const { data: project, error } = await supabase
