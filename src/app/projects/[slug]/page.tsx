@@ -1,12 +1,19 @@
 import { supabase } from '../../../../lib/supabaseClient'
 import { notFound } from 'next/navigation'
-import type { Metadata } from 'next'
+import type { Metadata, ResolvingMetadata } from 'next'
 
-// ✅ Используем props как Promise в generateMetadata
+// ✅ Типизация
+type Props = {
+    params: {
+        slug: string
+    }
+}
+
+// ✅ generateMetadata — принимает обычный params, без Promise
 export async function generateMetadata(
-    props: Promise<{ params: { slug: string } }>
+    { params }: Props,
+    _parent: ResolvingMetadata
 ): Promise<Metadata> {
-    const { params } = await props
     const { slug } = params
 
     const { data: project, error } = await supabase
@@ -16,10 +23,9 @@ export async function generateMetadata(
         .single()
 
     if (error || !project) {
+        console.error('[generateMetadata] Проект не найден:', error)
         return {}
     }
-
-    const image = project.image_url || 'https://placehold.co/600x400'
 
     return {
         title: `${project.title} – Fedor Tatarintsev`,
@@ -27,40 +33,35 @@ export async function generateMetadata(
         openGraph: {
             title: project.title,
             description: project.description,
-            images: [{ url: image }],
+            images: [{ url: project.image_url || 'https://placehold.co/600x400' }],
         },
         twitter: {
             card: 'summary_large_image',
             title: project.title,
             description: project.description,
-            images: [image],
+            images: [project.image_url || 'https://placehold.co/600x400'],
         },
     }
 }
 
-// ✅ Страница принимает обычный объект (НЕ Promise!)
-export default async function ProjectPage({
-    params,
-}: {
-    params: { slug: string }
-}) {
+// ✅ Страница проекта — без Promise
+export default async function ProjectPage({ params }: Props) {
     const { slug } = params
 
     const { data: project, error } = await supabase
         .from('projects')
-        .select('*')
+        .select('slug, title, description, url, image_url, tags')
         .eq('slug', slug)
         .maybeSingle()
 
     if (error || !project) {
+        console.error('[ProjectPage] Проект не найден:', error)
         notFound()
     }
 
     return (
         <main className="max-w-3xl mx-auto px-6 md:px-0 py-[150px] space-y-6">
             <h1 className="text-3xl font-bold">{project.title}</h1>
-
-            <p className="text-gray-600">{project.description}</p>
 
             {project.image_url && (
                 <img
@@ -70,7 +71,9 @@ export default async function ProjectPage({
                 />
             )}
 
-            {project.tags?.length > 0 && (
+            <p className="text-gray-600">{project.description}</p>
+
+            {Array.isArray(project.tags) && project.tags.length > 0 && (
                 <div className="flex flex-wrap gap-2">
                     {project.tags.map((tag: string) => (
                         <span
