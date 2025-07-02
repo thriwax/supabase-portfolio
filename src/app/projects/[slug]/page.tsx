@@ -79,7 +79,7 @@ export default async function ProjectPage({
 
             <p className="text-gray-600">{project.description}</p>
 
-            {/* 🔽 Вывод тегов */}
+            {/* 🔽 Теги проекта */}
             {Array.isArray(project.tags) && project.tags.length > 0 && (
                 <div className="flex flex-wrap gap-2">
                     {project.tags.map((tag: string) => (
