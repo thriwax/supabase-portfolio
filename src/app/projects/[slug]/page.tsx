@@ -2,7 +2,6 @@ import { supabase } from '../../../../lib/supabaseClient'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 
-// ✅ generateMetadata — params передаётся как Promise
 export async function generateMetadata(
     props: Promise<{ params: { slug: string } }>
 ): Promise<Metadata> {
@@ -16,11 +15,8 @@ export async function generateMetadata(
         .single()
 
     if (error || !project) {
-        console.error('[Metadata] Проект не найден или ошибка:', error)
         return {}
     }
-
-    const image = project.image_url || 'https://placehold.co/600x400'
 
     return {
         title: `${project.title} – Fedor Tatarintsev`,
@@ -28,41 +24,38 @@ export async function generateMetadata(
         openGraph: {
             title: project.title,
             description: project.description,
-            images: [{ url: image }],
-            type: 'website',
+            images: [{ url: project.image_url || 'https://placehold.co/600x400' }],
         },
         twitter: {
             card: 'summary_large_image',
             title: project.title,
             description: project.description,
-            images: [image],
+            images: [project.image_url || 'https://placehold.co/600x400'],
         },
     }
 }
 
-// ✅ ProjectPage — params синхронный объект
-export default async function ProjectPage({
-    params,
-}: {
-    params: { slug: string }
-}) {
+// ✅ params теперь — Promise, нужно await
+export default async function ProjectPage(
+    props: Promise<{ params: { slug: string } }>
+) {
+    const { params } = await props
     const { slug } = params
-    console.log('[Server] slug:', slug)
 
     const { data: project, error } = await supabase
         .from('projects')
-        .select('slug, title, description, url, image_url, tags')
+        .select('*')
         .eq('slug', slug)
         .maybeSingle()
 
     if (error || !project) {
-        console.error('[Server] Проект не найден или ошибка:', error)
         notFound()
     }
 
     return (
         <main className="max-w-3xl mx-auto px-6 md:px-0 py-[150px] space-y-6">
             <h1 className="text-3xl font-bold">{project.title}</h1>
+            <p className="text-gray-600">{project.description}</p>
 
             {project.image_url && (
                 <img
@@ -72,9 +65,7 @@ export default async function ProjectPage({
                 />
             )}
 
-            <p className="text-gray-600">{project.description}</p>
-
-            {Array.isArray(project.tags) && project.tags.length > 0 && (
+            {project.tags?.length > 0 && (
                 <div className="flex flex-wrap gap-2">
                     {project.tags.map((tag: string) => (
                         <span
