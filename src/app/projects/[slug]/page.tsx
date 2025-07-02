@@ -2,7 +2,7 @@ import { supabase } from '../../../../lib/supabaseClient'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 
-// ✅ generateMetadata — принимает асинхронный `props`
+// ✅ generateMetadata — params передаётся как Promise
 export async function generateMetadata(
     props: Promise<{ params: { slug: string } }>
 ): Promise<Metadata> {
@@ -40,7 +40,7 @@ export async function generateMetadata(
     }
 }
 
-// ✅ Основная страница — `params` обычный объект
+// ✅ ProjectPage — params синхронный объект
 export default async function ProjectPage({
     params,
 }: {
