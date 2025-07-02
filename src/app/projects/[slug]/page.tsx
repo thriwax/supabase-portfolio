@@ -2,14 +2,11 @@ import { supabase } from '../../../../lib/supabaseClient'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 
-type Props = {
-    params: {
-        slug: string
-    }
-}
-
-// ✅ generateMetadata — без Promise
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+// ✅ generateMetadata — принимает асинхронный `props`
+export async function generateMetadata(
+    props: Promise<{ params: { slug: string } }>
+): Promise<Metadata> {
+    const { params } = await props
     const { slug } = params
 
     const { data: project, error } = await supabase
@@ -43,8 +40,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }
 }
 
-// ✅ Страница проекта — без Promise
-export default async function ProjectPage({ params }: Props) {
+// ✅ Основная страница — `params` обычный объект
+export default async function ProjectPage({
+    params,
+}: {
+    params: { slug: string }
+}) {
     const { slug } = params
     console.log('[Server] slug:', slug)
 
