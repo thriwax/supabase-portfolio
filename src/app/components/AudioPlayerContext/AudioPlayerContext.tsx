@@ -44,11 +44,8 @@ export const AudioPlayerProvider = ({ children }: { children: ReactNode }) => {
     const toggleOpen = () => setIsOpen(prev => !prev)
 
     const play = () => {
-        const audio = audioRef.current
-        if (audio) {
-            audio.play().catch(console.warn)
-            setIsPlaying(true)
-        }
+        audioRef.current?.play()
+        setIsPlaying(true)
     }
 
     const pause = () => {
@@ -61,17 +58,6 @@ export const AudioPlayerProvider = ({ children }: { children: ReactNode }) => {
         setTrackTitle(title)
         setCoverUrl(cover)
         setIsOpen(true)
-
-        // Ждём обновление src, затем воспроизводим
-        setTimeout(() => {
-            const audio = audioRef.current
-            if (audio) {
-                audio.load()
-                audio.play().then(() => {
-                    setIsPlaying(true)
-                }).catch(console.warn)
-            }
-        }, 0)
     }
 
     const nextTrack = () => {
@@ -93,49 +79,35 @@ export const AudioPlayerProvider = ({ children }: { children: ReactNode }) => {
     }
 
     const setVolume = (value: number) => {
-        if (audioRef.current) {
-            audioRef.current.volume = value
-        }
+        if (audioRef.current) audioRef.current.volume = value
     }
 
     const seekTo = (time: number) => {
-        const audio = audioRef.current
-        if (audio) {
-            audio.currentTime = time
-            if (audio.paused && audio.readyState >= 2) {
-                audio.play().catch(console.warn)
-                setIsPlaying(true)
-            }
-        }
+        if (audioRef.current) audioRef.current.currentTime = time
     }
 
     useEffect(() => {
         const audio = audioRef.current
         if (!audio) return
 
-        const onLoadedMetadata = () => {
-            setDuration(audio.duration || 0)
-        }
-
-        const onTimeUpdate = () => {
-            setCurrentTime(audio.currentTime || 0)
-        }
-
         const onEnd = () => {
             setIsPlaying(false)
             nextTrack()
         }
 
-        audio.addEventListener('loadedmetadata', onLoadedMetadata)
-        audio.addEventListener('timeupdate', onTimeUpdate)
+        const onTimeUpdate = () => {
+            setCurrentTime(audio.currentTime)
+            setDuration(audio.duration)
+        }
+
         audio.addEventListener('ended', onEnd)
+        audio.addEventListener('timeupdate', onTimeUpdate)
 
         return () => {
-            audio.removeEventListener('loadedmetadata', onLoadedMetadata)
-            audio.removeEventListener('timeupdate', onTimeUpdate)
             audio.removeEventListener('ended', onEnd)
+            audio.removeEventListener('timeupdate', onTimeUpdate)
         }
-    }, [trackUrl])
+    }, [tracks, currentIndex])
 
     useEffect(() => {
         const fetchInitialTrack = async () => {
