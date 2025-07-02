@@ -2,7 +2,7 @@ import { supabase } from '../../../../lib/supabaseClient'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 
-// ✅ 1. generateMetadata — здесь params МОЖНО await
+// ✅ Используем props как Promise в generateMetadata
 export async function generateMetadata(
     props: Promise<{ params: { slug: string } }>
 ): Promise<Metadata> {
@@ -38,7 +38,7 @@ export async function generateMetadata(
     }
 }
 
-// ✅ 2. default export страницы — БЕЗ await, обычный объект
+// ✅ Страница принимает обычный объект (НЕ Promise!)
 export default async function ProjectPage({
     params,
 }: {
@@ -59,6 +59,7 @@ export default async function ProjectPage({
     return (
         <main className="max-w-3xl mx-auto px-6 md:px-0 py-[150px] space-y-6">
             <h1 className="text-3xl font-bold">{project.title}</h1>
+
             <p className="text-gray-600">{project.description}</p>
 
             {project.image_url && (
