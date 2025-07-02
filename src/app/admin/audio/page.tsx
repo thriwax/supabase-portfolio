@@ -1,82 +1,166 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { supabase } from '../../../../lib/supabaseClient'
 import { uploadImage } from '../../../../lib/uploadImage'
 
-// Если TrackList — клиентский, импорт можно оставить. Иначе: динамический импорт
-import dynamic from 'next/dynamic'
-const TrackList = dynamic(() => import('@/app/components/TrackList/TrackList'), { ssr: false })
+const BUCKET = 'project-images'
 
-export default function Page() {
-    const [title, setTitle] = useState('')
-    const [audioFile, setAudioFile] = useState<File | null>(null)
-    const [coverFile, setCoverFile] = useState<File | null>(null)
-    const [message, setMessage] = useState('')
+type FileItem = {
+    name: string
+    url: string
+}
 
-    const handleUpload = async () => {
-        if (!audioFile || !coverFile || !title) {
-            setMessage('Заполни все поля')
-            return
+export default function MediaPage() {
+    const [files, setFiles] = useState<FileItem[]>([])
+    const [uploading, setUploading] = useState(false)
+    const [renaming, setRenaming] = useState<string | null>(null)
+    const [newName, setNewName] = useState('')
+
+    useEffect(() => {
+        fetchFiles()
+    }, [])
+
+    const fetchFiles = async () => {
+        const { data, error } = await supabase.storage.from(BUCKET).list('', { limit: 100 })
+        if (error) return alert('Ошибка при получении файлов')
+
+        const items = data
+            .filter((f) => f.name.match(/\.(png|jpe?g|webp|gif|svg|bmp|avif)$/i))
+            .map((f) => ({
+                name: f.name,
+                url: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${f.name}`,
+            }))
+
+        setFiles(items)
+    }
+
+    const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (!file) return
+        setUploading(true)
+
+        const url = await uploadImage(file)
+
+        if (!url) {
+            alert('Ошибка загрузки файла')
+        } else {
+            console.log('Файл успешно загружен:', url)
+            await fetchFiles()
         }
 
-        setMessage('Загрузка...')
+        setUploading(false)
+    }
+
+    const handleDelete = async (name: string) => {
+        const confirm = window.confirm(`Удалить ${name}?`)
+        if (!confirm) return
+        await supabase.storage.from(BUCKET).remove([name])
+        await fetchFiles()
+    }
+
+    const handleRename = async () => {
+        if (!renaming || !newName.trim()) return
+
+        const { data, error: downloadError } = await supabase.storage.from(BUCKET).download(renaming)
+        if (downloadError || !data) {
+            console.error('Ошибка загрузки файла:', downloadError)
+            return alert('Ошибка загрузки файла')
+        }
 
         try {
-            const audioUrl = await uploadImage(audioFile)
-            const coverUrl = await uploadImage(coverFile)
+            const blob = await data.blob()
+            const ext = renaming.split('.').pop()
+            const newFileName = `${newName}.${ext}`
 
-            if (!audioUrl || !coverUrl) {
-                setMessage('Ошибка загрузки файлов')
+            const { error: uploadError } = await supabase.storage.from(BUCKET).upload(newFileName, blob)
+            if (uploadError) {
+                console.error('Ошибка при загрузке нового файла:', uploadError)
+                alert('Ошибка при переименовании: ' + uploadError.message)
                 return
             }
 
-            const { error } = await supabase.from('audio_tracks').insert({
-                title,
-                audio_url: audioUrl,
-                cover_url: coverUrl,
-            })
-
-            if (error) {
-                console.error(error)
-                setMessage('Ошибка при сохранении')
-            } else {
-                setMessage('✅ Трек загружен!')
-                setTitle('')
-                setAudioFile(null)
-                setCoverFile(null)
-            }
+            await supabase.storage.from(BUCKET).remove([renaming])
+            setRenaming(null)
+            setNewName('')
+            await fetchFiles()
         } catch (err) {
-            console.error(err)
-            setMessage('Произошла ошибка во время загрузки')
+            console.error('Ошибка при переименовании:', err)
+            alert('Ошибка при переименовании файла')
         }
     }
 
     return (
-        <div className="space-y-4 p-4 border rounded-md">
-            <h3 className="text-lg font-semibold">Загрузка аудио</h3>
+        <div className='container-second max-w-4xl mx-auto p-6 space-y-6'>
+            <h1 className='text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#D3E97A] to-[#7e8b4a]'>Files</h1>
+
             <input
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="Название трека"
-                className="w-full p-2 border rounded"
+                type='file'
+                accept='image/*'
+                onChange={handleUpload}
+                disabled={uploading}
+                className='block mb-4'
             />
-            <input
-                type="file"
-                accept="audio/*"
-                onChange={(e) => setAudioFile(e.target.files?.[0] || null)}
-            />
-            <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => setCoverFile(e.target.files?.[0] || null)}
-            />
-            <button onClick={handleUpload} className="bg-black text-white px-4 py-2 rounded">
-                Загрузить
-            </button>
-            <p className="text-sm text-gray-600">{message}</p>
-            <TrackList />
+
+            <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4'>
+                {files.map((file) => (
+                    <div key={file.name} className='p-2 rounded space-y-2 bg-[#3f3f3f] text-black overflow-hidden'>
+                        <img
+                            src={file.url}
+                            alt={file.name}
+                            className='w-full h-32 object-contain bg-gray-100 rounded'
+                        />
+                        <p className='text-sm truncate text-white'>{file.name}</p>
+                        <div className='space-x-2 text-sm'>
+                            <button
+                                onClick={() => navigator.clipboard.writeText(file.url)}
+                                className='text-xs p-1 bg-gray-200 text-gray-600 rounded-sm max-sm:text-[8px] hover:bg-[#d3e97a]'
+                            >
+                                Copy URL
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setRenaming(file.name)
+                                    setNewName(file.name.replace(/\.[^.]+$/, ''))
+                                }}
+                                className='text-xs p-1 bg-gray-200 text-gray-600 rounded-sm mr-2 max-sm:text-[8px] hover:bg-[#d3e97a]'
+                            >
+                                Rename
+                            </button>
+                            <button
+                                onClick={() => handleDelete(file.name)}
+                                className='text-xs p-1 bg-gray-200 text-gray-600 rounded-sm mr-2 max-sm:text-[8px] hover:bg-[#d3e97a]'
+                            >
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            {renaming && (
+                <div className='fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50'>
+                    <div className='bg-black text-white p-6 rounded space-y-4 w-96 max-w-full'>
+                        <h2 className='text-5xl font-bold'>Rename File</h2>
+                        <input
+                            value={newName}
+                            onChange={(e) => setNewName(e.target.value)}
+                            className='w-full p-2 border'
+                        />
+                        <div className='flex justify-end space-x-2'>
+                            <button onClick={() => setRenaming(null)} className='px-4 py-1 border rounded'>
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleRename}
+                                className='px-4 py-1 bg-blue-600 text-white rounded'
+                            >
+                                Save
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }

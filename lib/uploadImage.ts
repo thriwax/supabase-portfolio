@@ -1,12 +1,21 @@
-// src/lib/uploadImage.ts
 import { supabase } from './supabaseClient'
 
-export async function uploadImage(file: File): Promise<string | null> {
-  const fileName = `${Date.now()}-${file.name}`
+function sanitizeFileName(fileName: string): string {
+  return fileName
+    .normalize('NFKD')
+    .replace(/[^\w.-]+/g, '-')
+    .replace(/-+/g, '-')
+    .toLowerCase()
+}
 
-  const { data, error } = await supabase.storage
-    .from('project-images') // название твоего bucket
-    .upload(fileName, file, {
+export async function uploadImage(file: File): Promise<{ url: string; name: string } | null> {
+  const cleanName = sanitizeFileName(file.name)
+  const fileName = `${Date.now()}-${cleanName}`
+  const safeFile = new File([file], fileName, { type: file.type })
+
+  const { error } = await supabase.storage
+    .from('project-images')
+    .upload(fileName, safeFile, {
       cacheControl: '3600',
       upsert: false,
     })
@@ -16,5 +25,6 @@ export async function uploadImage(file: File): Promise<string | null> {
     return null
   }
 
-  return `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/project-images/${fileName}`
+  const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/project-images/${fileName}`
+  return { url, name: fileName }
 }

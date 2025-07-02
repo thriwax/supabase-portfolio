@@ -2,6 +2,38 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url("https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;700&display=swap&subset=cyrillic,cyrillic-ext");
+
+input,
+input::placeholder,
+textarea,
+textarea::placeholder {
+  font-family: "Bebas Neue", "Bebas Neue Fallback", "Fira Sans", sans-serif;
+}
+
+::placeholder {
+  color: #999 !important; /* ваш цвет */
+  opacity: 1; /* чтобы не был полупрозрачным */
+}
+
+/* Для кроссбраузерности */
+input::placeholder,
+textarea::placeholder {
+  color: #999 !important;
+  opacity: 1;
+  font-family: "Fira Sans", sans-serif;
+}
+
+input {
+  color: #000; /* если value есть, делаем текст более тёмным */
+  font-family: "Fira Sans", sans-serif;
+}
+
+textarea {
+  color: #000; /* если value есть, делаем текст более тёмным */
+  font-family: "Fira Sans", sans-serif;
+}
+
 .katana {
   font-family: var(--font-katana), serif;
 }
@@ -25,6 +57,10 @@
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000),
     var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
   margin-bottom: 150px;
+}
+
+.marquee {
+  margin-bottom: 80px;
 }
 
 :root {

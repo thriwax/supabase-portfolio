@@ -4,7 +4,7 @@ import Link from 'next/link'
 
 export default function Footer() {
     return (
-        <footer className="w-full border-t border-gray-200 dark:border-gray-700 bg-[#d3e97a] text-black ">
+        <footer className="w-full dark:border-gray-700 bg-[#d3e97a] text-black ">
             <div className="max-w-7xl mx-auto px-6 py-20 flex flex-col md:flex-row items-center justify-between gap-6">
                 {/* Имя / логотип */}
                 <div className="text-3xl font-bold tracking-wide font-bebas text-black">

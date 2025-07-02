@@ -75,11 +75,11 @@ export default function AdminPage() {
 
     return (
         <>
-            <div className='space-y-10 p-6 max-w-4xl mx-auto'>
-                <h1 className='text-2xl font-bold'>Admin Page</h1>
+            <div className='container-second space-y-10 p-6 max-w-4xl mx-auto'>
+                <h1 className='text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#D3E97A] to-[#7e8b4a]'>Admin Page</h1>
 
                 <section className='space-y-4'>
-                    <h2 className='text-xl font-semibold'>Sections</h2>
+                    <h2 className='text-5xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-[#D3E97A] to-[#7e8b4a]'>Sections</h2>
                     <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
                         <Link href='/admin/articles' className='block border p-4 rounded hover:bg-gray-100'>
                             ✍️ Manage Articles
@@ -94,12 +94,12 @@ export default function AdminPage() {
                 </section>
 
                 <section className='space-y-4'>
-                    <h2 className='text-xl font-semibold'>SEO</h2>
+                    <h2 className='text-5xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-[#D3E97A] to-[#7e8b4a]'>SEO</h2>
                     <input value={seo.title} onChange={(e) => setSeo({ ...seo, title: e.target.value })} placeholder='Title' className='w-full p-2 border rounded' />
                     <input value={seo.description} onChange={(e) => setSeo({ ...seo, description: e.target.value })} placeholder='Description' className='w-full p-2 border rounded' />
                     <input value={seo.keywords} onChange={(e) => setSeo({ ...seo, keywords: e.target.value })} placeholder='Keywords' className='w-full p-2 border rounded' />
                     {/* biome-ignore lint/a11y/useButtonType: <explanation> */}
-                    <button onClick={saveSeo} className='bg-green-600 text-white px-4 py-2 rounded'>Save</button>
+                    <button onClick={saveSeo} className='bg-[#550cff] text-white px-4 py-2 rounded w-[100%] font-bebas text-xl'>Save</button>
                 </section>
             </div>
         </>

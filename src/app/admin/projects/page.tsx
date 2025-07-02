@@ -33,7 +33,7 @@ export default function ProjectListPage() {
     }
 
     return (
-        <div className='max-w-3xl mx-auto p-6 space-y-6'>
+        <div className='container-second max-w-3xl mx-auto p-6 space-y-6'>
             <h1 className='text-2xl font-bold'>Projects Page</h1>
 
             <div className='text-right'>

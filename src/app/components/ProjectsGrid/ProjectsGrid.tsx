@@ -41,7 +41,7 @@ export default function ProjectsGrid({ limit = 6 }: { limit?: number }) {
 
             {pathname === '/' && (
                 <div className='mt-10 text-center'>
-                    <Link href='/projects' className='transition font-bebas px-6 py-3 w-full font-light sm:w-fit rounded-md mr-4 bg-[#D3E97A] hover:bg-slate-200 text-[#0A0A0A] shadow-inner hover:animate-pulse max-sm:mr-0'>
+                    <Link href='/projects' className='transition font-bebas px-6 py-3 w-full font-light sm:w-fit rounded-md bg-[#D3E97A] hover:bg-slate-200 text-[#0A0A0A] shadow-inner hover:animate-pulse max-sm:mr-0'>
                         All Projects
                     </Link>
                 </div>

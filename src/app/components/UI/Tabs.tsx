@@ -36,7 +36,7 @@ export default function Tabs() {
                 {tabs.map(
                     (tab) =>
                         tab.name === active && (
-                            <div key={tab.name} className="animate-fade h-[300px]">
+                            <div key={tab.name} className="animate-fade h-[180px] max-sm:h-[350px]">
                                 {tab.content}
                             </div>
                         )

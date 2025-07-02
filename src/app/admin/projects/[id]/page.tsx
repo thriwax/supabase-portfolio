@@ -77,49 +77,49 @@ export default function EditProjectPage() {
     }
 
     return (
-        <div className='max-w-3xl mx-auto p-6 space-y-6'>
-            <h1 className='text-2xl font-bold'>Редактировать проект</h1>
+        <div className='pt-[150px] max-w-2xl mx-auto p-6 space-y-6'>
+            <h1 className='text-5xl font-bold font-bebas'>Edit Project</h1>
 
             <input
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder='Название проекта'
+                placeholder='PROJECT NAME'
                 className='w-full p-2 border rounded'
             />
 
             <input
                 value={slug}
                 onChange={(e) => setSlug(e.target.value)}
-                placeholder='Слаг (example-project)'
+                placeholder='SLUG'
                 className='w-full p-2 border rounded'
             />
 
             <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder='Описание'
+                placeholder='DESCRIPTION'
                 className='w-full p-2 border rounded'
             />
 
             <input
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
-                placeholder='URL проекта'
+                placeholder='LINK'
                 className='w-full p-2 border rounded'
             />
 
             <input
                 value={tags}
                 onChange={(e) => setTags(e.target.value)}
-                placeholder='Теги (через запятую)'
+                placeholder='TAGS'
                 className='w-full p-2 border rounded'
             />
 
             <div>
                 {/* biome-ignore lint/a11y/noLabelWithoutControl: <explanation> */}
-                <label className='block mt-4 mb-1 font-medium'>Обложка</label>
+                <label className='block mt-4 mb-1 font-medium'>COVER</label>
 
-                {imageUrl && <img src={imageUrl} alt='cover' className='max-h-48 rounded mb-2' />}
+                {imageUrl && <img src={imageUrl} alt='cover' className='w-[100%] min-h-[350px] rounded mb-2 object-cover' />}
 
                 <div className='flex gap-2 items-center'>
                     <input
@@ -133,7 +133,7 @@ export default function EditProjectPage() {
                         onClick={() => setShowPicker(true)}
                         className='px-3 py-1 border rounded text-sm'
                     >
-                        📁 Выбрать из библиотеки
+                        📁 Choose from Media Library
                     </button>
                 </div>
 
@@ -153,7 +153,7 @@ export default function EditProjectPage() {
                 onClick={handleSave}
                 className='bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 transition'
             >
-                Сохранить
+                SAVE
             </button>
         </div>
     )

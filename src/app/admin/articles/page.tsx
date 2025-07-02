@@ -33,7 +33,7 @@ export default function ArticleListPage() {
     }
 
     return (
-        <div className='max-w-3xl mx-auto p-6 space-y-6'>
+        <div className='container-second max-w-3xl mx-auto p-6 space-y-6'>
             <h1 className='text-2xl font-bold'>Blog Page</h1>
 
             <div className='text-right'>
@@ -45,7 +45,7 @@ export default function ArticleListPage() {
                 </Link>
             </div>
 
-            {articles.length === 0 && <p className='text-gray-500'>There are no articles</p>}
+            {articles.length === 0 && <p className='text-gray-500 min-h-[350px]'>There are no articles</p>}
 
             <ul className='space-y-2'>
                 {articles.map((article) => (

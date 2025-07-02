@@ -44,7 +44,7 @@ export default function NewArticlePage() {
     }
 
     return (
-        <div className='max-w-3xl mx-auto p-6 space-y-6'>
+        <div className='container-second max-w-3xl mx-auto p-6 space-y-6'>
             <h1 className='text-2xl font-bold'>New Article</h1>
 
             <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder='Заголовок' className='w-full p-2 border rounded' />
